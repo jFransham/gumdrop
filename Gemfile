@@ -1,4 +1,4 @@
 source 'https://rubygems.org'
-gem 'flavour_saver'
+gem 'handlebars'
 gem 'recursive-open-struct'
 gem 'redcarpet'

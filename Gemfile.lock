@@ -1,21 +1,23 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    ffi (1.9.14)
-    flavour_saver (0.3.8)
-      rltk (~> 2.2.0)
-      tilt
+    handlebars (0.8.0)
+      handlebars-source (~> 4.0.5)
+      therubyracer (~> 0.12.1)
+    handlebars-source (4.0.5)
+    libv8 (3.16.14.15)
     recursive-open-struct (1.0.1)
     redcarpet (3.3.4)
-    rltk (2.2.1)
-      ffi (>= 1.0.0)
-    tilt (2.0.5)
+    ref (2.0.0)
+    therubyracer (0.12.2)
+      libv8 (~> 3.16.14.0)
+      ref
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  flavour_saver
+  handlebars
   recursive-open-struct
   redcarpet
 
