@@ -1,0 +1,23 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    ffi (1.9.14)
+    flavour_saver (0.3.8)
+      rltk (~> 2.2.0)
+      tilt
+    recursive-open-struct (1.0.1)
+    redcarpet (3.3.4)
+    rltk (2.2.1)
+      ffi (>= 1.0.0)
+    tilt (2.0.5)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  flavour_saver
+  recursive-open-struct
+  redcarpet
+
+BUNDLED WITH
+   1.12.5
