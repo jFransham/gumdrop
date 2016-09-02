@@ -75,8 +75,6 @@ end
 def build_templates_obj_from_folder(folder_name)
 	out_obj = Object.new
 
-	save_names = [:object_id, :__send__]
-
 	usable_entries(folder_name).each do |entry|
 		template = File.open(entry) { |f| f.read }
 
@@ -84,17 +82,9 @@ def build_templates_obj_from_folder(folder_name)
 
 		FS.register_partial(template_name, template)
 
-		save_names.push template_name
-
 		out_obj.define_singleton_method(template_name) do |obj|
 			FS.evaluate(template, obj)
 		end
-	end
-	
-	s_class = out_obj.singleton_class
-	
-	out_obj.methods.reject { |m| save_names.include? m }.each do |meth|
-		s_class.send :undef_method, meth
 	end
 	
 	out_obj
