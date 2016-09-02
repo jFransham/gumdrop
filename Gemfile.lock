@@ -6,7 +6,6 @@ GEM
       therubyracer (~> 0.12.1)
     handlebars-source (4.0.5)
     libv8 (3.16.14.15)
-    recursive-open-struct (1.0.1)
     redcarpet (3.3.4)
     ref (2.0.0)
     therubyracer (0.12.2)
@@ -18,7 +17,6 @@ PLATFORMS
 
 DEPENDENCIES
   handlebars
-  recursive-open-struct
   redcarpet
 
 BUNDLED WITH
