@@ -1,6 +1,8 @@
-<h1>{{site_name}}</h1>
-<ul>
-  {{#each items}}
-    <li><a href="{{@key}}">{{name}}</a></li>
-  {{/each}}
-</ul>
+{{#> partials/layout title="Home" }}
+  <h1>{{site_name}}</h1>
+  <ul>
+	  {{#each items}}
+		<li><a href="{{@key}}">{{name}}</a></li>
+	  {{/each}}
+  </ul>
+{{/partials/layout}}

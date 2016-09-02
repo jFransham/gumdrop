@@ -19,6 +19,9 @@ def build_hash_from_file(file)
 	when ".md", ".markdown"
 		contents = read_to_string(file)
 		{ "content" => markdown.render(contents) }
+	when ".rb"
+		contents = read_to_string(file)
+		eval(contents)
 	else
 		raise ArgumentError, "Unsupported data file format #{ext}"
 	end
@@ -70,20 +73,37 @@ def build_hash_from_folder(folder_name)
 	out
 end
 
-def build_templates_obj_from_folder(folder_name)
+def build_templates_obj_from_folder(folder_name, prefix="")
 	out_obj = Object.new
 
 	usable_entries(folder_name).each do |entry|
-		template_text = read_to_string entry
-		template_compiled = @handlebars.compile template_text
+		if File.directory? entry
+			template_name = File.basename entry
+			
+			template_set = build_templates_obj_from_folder(
+				"#{folder_name}/#{template_name}",
+				"#{prefix}#{template_name}/"
+			)
+			
+			out_obj.define_singleton_method(template_name) do ||
+				template_set
+			end
+		elsif ['.hbs', '.handlebars'].include? File.extname(entry)
+			template_text = read_to_string entry
+			template_compiled = @handlebars.compile template_text
 
-		template_name = File.basename(entry, ".*").to_sym
+			template_name = File.basename(entry, ".*").to_sym
 
-		@handlebars.register_partial(template_name, template_text)
+			@handlebars.register_partial(
+				"#{prefix}#{template_name}",
+				template_text
+			)
 
-		out_obj.define_singleton_method(template_name) do |obj|
-			template_compiled.call(obj)
+			out_obj.define_singleton_method(template_name) do |obj|
+				template_compiled.call(obj)
+			end
 		end
+		# Otherwise, ignore file
 	end
 	
 	out_obj
@@ -105,6 +125,13 @@ def save_site_to_disk(path, site)
 			end
 		end
 	end
+end
+
+def copy_static_files(output_folder, static_folder)
+	if File.directory? static_folder
+		FileUtils.cp_r Dir.glob("#{static_folder}/*"), output_folder
+	end
+	# Else noop
 end
 
 def read_to_string(file_path)
@@ -144,11 +171,16 @@ def num_leaves(hash)
 	counter
 end
 
+def files_in_directory(dir)
+	Dir[File.join(dir, "**", "*")].count { |f| File.file?(f) }
+end
+
 path = (ARGV[0] || ".").chomp("/")
 
 data_path = "#{path}/data"
 template_path = "#{path}/templates"
 site_script_path = "#{path}/site.rb"
+static_path = "#{path}/static"
 out_path = "#{path}/out"
 
 if not [data_path, template_path, site_script_path].all? { |f| File.exists? f }
@@ -160,6 +192,9 @@ templates = build_templates_obj_from_folder template_path
 
 site = eval(read_to_string(site_script_path)).call(data, templates)
 
-puts "Saving #{num_leaves site} pages to #{out_path}"
+num_generated = num_leaves site
+num_static = files_in_directory static_path
+puts "Saving #{num_generated} pages and #{num_static} files to #{out_path}"
 
 save_site_to_disk(out_path, site)
+copy_static_files(out_path, static_path)
