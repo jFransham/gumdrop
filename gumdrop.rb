@@ -1,24 +1,27 @@
+#! /usr/bin/ruby
+
 require 'bundler/setup'
+require 'json'
 require 'yaml'
 require 'redcarpet'
 require 'handlebars'
 require 'fileutils'
 
 @handlebars = Handlebars::Context.new
+@renderer = Redcarpet::Render::HTML.new
+@markdown = Redcarpet::Markdown.new @renderer
+
 
 def build_hash_from_file(file)
 	ext = File.extname file
 	
-	renderer = Redcarpet::Render::HTML.new
-	markdown = Redcarpet::Markdown.new renderer
-
 	case ext
 	when ".yml", ".yaml"
 		contents = read_to_string(file)
 		YAML.load(contents)
 	when ".md", ".markdown"
 		contents = read_to_string(file)
-		{ "content" => markdown.render(contents) }
+		{ "content" => @markdown.render(contents) }
 	when ".rb"
 		contents = read_to_string(file)
 		eval(contents)
@@ -146,15 +149,21 @@ def usable_entries(folder)
 	}
 end
 
-def symbolize_recursive(hash)
-	Hash[
-		hash.map { |k, v|
-			[
-				k.to_sym,
-				if v.is_a? Hash then symbolize_recursive(v) else v end
-			]
-		}
-	]
+def symbolize_recursive(obj)
+	if obj.is_a? Hash
+		Hash[
+			obj.map { |k, v|
+				[
+					k.to_sym,
+					symbolize_recursive(v)
+				]
+			}
+		]
+	elsif obj.is_a? Enumerable
+		obj.map { |s| symbolize_recursive(s) }
+	else
+		obj
+	end
 end
 
 def num_leaves(hash)
@@ -175,26 +184,83 @@ def files_in_directory(dir)
 	Dir[File.join(dir, "**", "*")].count { |f| File.file?(f) }
 end
 
-path = (ARGV[0] || ".").chomp("/")
+def get_paths(base)
+	path = (base || ".").chomp("/")
 
-data_path = "#{path}/data"
-template_path = "#{path}/templates"
-site_script_path = "#{path}/site.rb"
-static_path = "#{path}/static"
-out_path = "#{path}/out"
-
-if not [data_path, template_path, site_script_path].all? { |f| File.exists? f }
-	raise "Not a site directory: #{path}"
+	{
+		path: path,
+		helpers_path: "#{path}/helpers.rb",
+		data_path: "#{path}/data",
+		template_path: "#{path}/templates",
+		site_script_path: "#{path}/site.rb",
+		static_path: "#{path}/static",
+		out_path: "#{path}/out",
+	}
 end
 
-data = symbolize_recursive(build_hash_from_folder data_path)
-templates = build_templates_obj_from_folder template_path
+def show_data(args)
+	path, data_path, template_path, site_script_path, static_path, out_path =
+		get_paths(args[0]).values_at(
+			:path,
+			:data_path,
+			:template_path,
+			:site_script_path,
+			:static_path,
+			:out_path
+		)
+			
+	if not [data_path, template_path, site_script_path].all? { |f| File.exists? f }
+		raise "Not a site directory: #{path}"
+	end
 
-site = eval(read_to_string(site_script_path)).call(data, templates)
+	puts JSON.pretty_generate(
+		symbolize_recursive(build_hash_from_folder data_path)
+	)
+end
 
-num_generated = num_leaves site
-num_static = files_in_directory static_path
-puts "Saving #{num_generated} pages and #{num_static} files to #{out_path}"
+def build(args)
+	path, data_path, template_path, site_script_path, static_path, out_path,
+		helpers_path =
+		get_paths(args[0]).values_at(
+			:path,
+			:data_path,
+			:template_path,
+			:site_script_path,
+			:static_path,
+			:out_path,
+			:helpers_path
+		)
+		
+	[data_path, template_path, site_script_path].each do |p|
+		if not File.exists? p
+			raise "Not a site directory: #{path} (could not find #{p})"
+		end
+	end
 
-save_site_to_disk(out_path, site)
-copy_static_files(out_path, static_path)
+	if File.exists? helpers_path
+		helpers = eval(read_to_string(helpers_path))
+
+		helpers.each do |name, func|
+			@handlebars.register_helper(name, &func)
+		end
+	end
+	
+	data = symbolize_recursive(build_hash_from_folder data_path)
+	templates = build_templates_obj_from_folder template_path
+
+	site = eval(read_to_string(site_script_path)).call(data, templates)
+
+	num_generated = num_leaves site
+	num_static = files_in_directory static_path
+	puts "Saving #{num_generated} pages and #{num_static} files to #{out_path}"
+
+	save_site_to_disk(out_path, site)
+	copy_static_files(out_path, static_path)
+end
+
+case ARGV[0]
+when 'show-data'
+	show_data(ARGV[1..-1])
+else
+	build(ARGV)
+end
