@@ -157,9 +157,8 @@ out
 ```
 The keys are just path fragments, so you can use `"."` to refer to the current
 path, or even `".."` to go up a level. The paths are converted to folders
-containing a single element - an `index.html` file containing the value of the
-key if it is a `String`, or the result of recursively converting the value to
-a folder tree if it is a `Hash`.
+containing an `index.html` file containing the value if it is a `String`, or the
+result of recursively converting the value to a folder tree if it is a `Hash`.
 
 ## Additional
 
