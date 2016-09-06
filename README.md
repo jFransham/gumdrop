@@ -1,7 +1,8 @@
 # GuMDrop
 
-A static site generator for developers. Don't run this on untrusted data - it
-will `eval` any Ruby scripts it finds in the data folder! _That's really bad_.
+A tiny, suckless static site generator for developers. Don't run this on
+untrusted data - it will `eval` any Ruby scripts it finds in the data folder!
+_That's really bad_.
 
 It also `eval`s `[site folder]/site.rb`, `[site folder]/helpers.rb`, and, like,
 every ruby file in your system given a creative enough bad actor (or one
