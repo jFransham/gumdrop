@@ -8,7 +8,7 @@ every ruby file in your system given a creative enough bad actor (or one
 who knows how to symlink). Even if I got rid of that, it uses YAML as its
 configuration format, which Ruby's own documentation states should not be used
 on untrusted data. Point is, this is a website development framework, not a
-blogging platform, although it can certainly be used as such if you are careful.
+blogging platform.
 
 Essentially, a GuMDrop site is made up of 3 basic parts:
 - A folder full of data
