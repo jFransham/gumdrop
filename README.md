@@ -68,19 +68,19 @@ would have the `[filename]` "file"):
     `:[filename]` and the value of recursively converting this folder to a hash,
     using the same rules as converting the data folder.
 
-*Important*: If multiple files or folders are found with the same name, their
-values will be merged. Because of this, `.rb` files must evaluate to a `Hash`.
-The order in which files are visited is unspecified, so if the values have the
-same key it is unspecified which of the possible values are included in the
-output.
-
-There is one exception to this rule: if a file or folder with the name "index"
+There is one exception to these rules: if a file or folder with the name "index"
 is found, that node is merged into the parent. So, for example, a folder
 containing only an `index.yml` file will be a node in the data tree with the
 folder name as the key and the contents of `index.yml` as the value. You could
 have a huge nested set of folders called `index` if you wanted to, but that's
 probably pointless. Hell though, some people do worse things for fun, so go
 crazy.
+
+*Important*: If multiple files or folders are found with the same name, their
+values will be merged. Because of this, `.rb` files must evaluate to a `Hash`.
+The order in which files are visited is unspecified, so if the values have the
+same key it is unspecified which of the possible values are included in the
+output.
 
 ## Templates
 
