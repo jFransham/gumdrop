@@ -28,6 +28,7 @@ would have the `[filename]` "file"):
 - `.yaml`, `.yml` files:
   - These get converted to a node in the tree with the key `:[filename]` and
     the value of a hash representing the file's data. For example:
+    
     ```yaml
     one:
       two: three
@@ -36,13 +37,16 @@ would have the `[filename]` "file"):
       seven: eight
     - nine: ten
     ```
+    
     would be converted to the hash
+    
     ```ruby
     {
       one: { two: 'three' },
       four: [ { five: 'six', seven: 'eight' }, { nine: 'ten' } ],
     }
     ```
+    
     All keys get symbolized, so you don't need to write `:key: value` (you can,
     but it will be treated equally to `key: value`).
 - `.md`, `.markdown` files:
