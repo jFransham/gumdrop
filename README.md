@@ -4,7 +4,7 @@ A static site generator for developers. Don't run this on untrusted data - it
 will `eval` any Ruby scripts it finds in the data folder! _That's really bad_.
 
 It also `eval`s `[site folder]/site.rb`, `[site folder]/helpers.rb`, and, like,
-every ruby file in your system given a creative enough bad actor (or, like, one
+every ruby file in your system given a creative enough bad actor (or one
 who knows how to symlink). Even if I got rid of that, it uses YAML as its
 configuration format, which Ruby's own documentation states should not be used
 on untrusted data. Point is, this is a website development framework, not a
