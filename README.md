@@ -167,6 +167,11 @@ path, or even `".."` to go up a level. The paths are converted to folders
 containing an `index.html` file containing the value if it is a `String`, or the
 result of recursively converting the value to a folder tree if it is a `Hash`.
 
+If you want to define a file, prepend `$` to its name. So if you want to output
+a dynamically-generated css file called `site.css`, have a node with the key
+`$site.css`. Behaviour is undefined if you have this style of key with a `Hash`
+value.
+
 ## Additional
 
 Additionally, you can register helpers for the handlebars templates by defining
