@@ -1,1 +1,2 @@
 site_name: "Test!"
+test_markdown: !!markdown 'I say *Hello!*'

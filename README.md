@@ -50,6 +50,8 @@ would have the `[filename]` "file"):
     
     All keys get symbolized, so you don't need to write `:key: value` (you can,
     but it will be treated equally to `key: value`).
+  - If you want an arbitrary node to be treated as markdown, use the
+    `!!markdown` type, such as `!!markdown Something *really* _important_`.
 - `.md`, `.markdown` files:
   - These get converted to a node with the key `:[filename]` and the value of a
     hash containing a single k/v pair:

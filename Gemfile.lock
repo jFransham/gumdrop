@@ -18,6 +18,3 @@ PLATFORMS
 DEPENDENCIES
   handlebars
   redcarpet
-
-BUNDLED WITH
-   1.12.5
